@@ -1,9 +1,10 @@
 import React from 'react';
+import { CreateSoldiers } from './pages/CreateSoldiers';
 
 function App() {
   return (
     <div className="container">
-      <h1>Soldier</h1>
+      <CreateSoldiers/>
     </div>
   );
 }
