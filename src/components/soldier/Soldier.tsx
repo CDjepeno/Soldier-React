@@ -12,9 +12,10 @@ type Props = {
     point: number;
     powerUp: any;
     powerLess: any;
+    
 }
 
-export const Soldiers: React.FC<Props> = ( {power, agility, inteligeance, img, right, left, point, powerUp, powerLess} ) => {
+export const Soldier: React.FC<Props> = ( {power, agility, inteligeance, img, right, left, point, powerUp, powerLess} ) => {
     return (
         <div className="row no-gutters">
             <div className="col-6">
