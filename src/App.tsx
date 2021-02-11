@@ -1,10 +1,19 @@
-import React from 'react';
-import { CreateSoldiers } from './pages/CreateSoldiers';
+import React, {useState} from 'react';
+import { CreateSoldiers } from './pages/createSoldiers/CreateSoldiers';
+import { Soldiers } from './pages/soldiers/soldiers';
 
-function App() {
+const App: React.FC = () => {
+ const [refresh, setRefresh] = useState(false)
+
+ const handleRefesh = () => {
+   setRefresh(!refresh)
+ }
+
+ console.log(refresh);
   return (
     <div className="container">
-      <CreateSoldiers/>
+      <CreateSoldiers refresh={handleRefesh}/>
+      <Soldiers reffresh={refresh}/>
     </div>
   );
 }

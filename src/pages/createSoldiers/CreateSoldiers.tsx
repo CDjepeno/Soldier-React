@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '../components/buttons/Buttons';
-import { Soldiers } from '../components/soldier/Soldier';
-import { Weapon } from '../components/weapons/Weapons';
-import { Title } from '../components/title/Title';
-import WeaponService from '../services/weaponAPI';
-import { log } from 'console';
+import { Button } from '../../components/buttons/Buttons';
+import { Soldier } from '../../components/soldier/Soldier';
+import { Weapon } from '../../components/weapons/Weapons';
+import { Title } from '../../components/title/Title';
 import axios from 'axios';
 
 interface PropsState {
@@ -17,9 +15,14 @@ interface PropsState {
     weapon:any;
     load:boolean;
     name:string;
+   
 }
 
-export const CreateSoldiers: React.FC = () => {
+interface Props {
+    refresh:any;
+}
+
+export const CreateSoldiers: React.FC<Props> = ({ refresh }) => {
     const [soldier, setSoldier] = useState<PropsState>({
         power: 0,
         agility: 0,
@@ -31,7 +34,10 @@ export const CreateSoldiers: React.FC = () => {
         load: false,
         name: ""
     })
-
+    
+    /**
+     * Requète permettant de récupérer la liste des armes
+     */
     const getWeapons = () => {    
         return axios
         .get('https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/weapons.json')
@@ -44,9 +50,12 @@ export const CreateSoldiers: React.FC = () => {
 
     useEffect(() => {
         setSoldier({...soldier, load: true})
-        getWeapons();
+        getWeapons();    
     }, [])
     
+    /**
+     * Permet de changer de personnage en cliquant à droite
+     */
     const handleRight = () => {
         if (soldier.image < 3) {
             setSoldier({
@@ -55,13 +64,19 @@ export const CreateSoldiers: React.FC = () => {
             })
         }
     }
-
+    
+    /**
+     * Permet de changer de personnage en cliquant a gauche
+     */
     const handleLeft = () => {
         if (soldier.image > 1) {
             setSoldier({ ...soldier, image: soldier.image - 1 })
         }
     }
 
+    /**
+     * Permet d'augmenter les stats
+     */
     const handlePowerUp = (carac: string) => {        
         if (carac === 'power' && soldier.power <= 5 && soldier.point > 0) {
             setSoldier({ ...soldier, power: soldier.power + 1, point : soldier.point - 1 })
@@ -72,6 +87,9 @@ export const CreateSoldiers: React.FC = () => {
         }
     }
 
+    /**
+     * Permet de diminué les stats
+     */
     const handlePowerLess = (carac: string) => {
         if (carac === 'power' && soldier.power <= 5 || soldier.power > 1 && soldier.point < 7) {
             setSoldier({ ...soldier, power: soldier.power - 1, point : soldier.point + 1 })
@@ -82,11 +100,17 @@ export const CreateSoldiers: React.FC = () => {
         }
     }
 
+    /**
+     * Mise a jour du state via l'input
+     */
     const handleChangeWeapon = (weapon: any) => {
         const newSoldier = {...soldier};
         setSoldier({...newSoldier, weapon: weapon })        
     }
 
+    /**
+     * Mise à jour des données
+     */
     const handleReset = () => {
         setSoldier({...soldier,
             weapon: null,
@@ -97,6 +121,9 @@ export const CreateSoldiers: React.FC = () => {
         })
     }
 
+    /**
+     * Création du personnage
+     */
     const handleCreate = (e:any) => {
         setSoldier({...soldier, load: true})
 
@@ -104,18 +131,16 @@ export const CreateSoldiers: React.FC = () => {
             perso : {...soldier}, 
             name : soldier.name 
         }
-
-        console.log(player);
-        
         axios
             .post('https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/soldier.json',player)
             .then(response => {
                 console.log(response)
                 handleReset();
+                refresh();
             })
             .catch(error => console.log(error))
-
     }
+
 
 
     return (<>
@@ -124,7 +149,7 @@ export const CreateSoldiers: React.FC = () => {
             <label htmlFor="inputName" className="form-label">Votre nom</label>
             <input type="text" name="name" className="form-control" id="inputName" value={soldier.name} onChange={(e) => setSoldier({...soldier, name:e.target.value})}/>
         </div>
-        <Soldiers
+        <Soldier
             right={handleRight} left={handleLeft}
             power={soldier.power} agility={soldier.agility}
             inteligeance={soldier.inteligeance} img={soldier.image}
