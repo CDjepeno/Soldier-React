@@ -8,6 +8,7 @@ import ImageEpee from '../../assets/images/armes/epee.png'
 import ImageFleau from '../../assets/images/armes/fleau.png'
 import ImageHache from '../../assets/images/armes/hache.png'
 import classes from './soldiers.module.css'
+import SoldierService from '../../services/SoldiersAPI';
 
 
 // type Props = {
@@ -34,22 +35,7 @@ interface Props {
 export const Soldiers: React.FC<Props> = ({ reffresh }) => {
 
     const [soldiers, setSoldiers] = useState<Soldiers[]>([])
-    const [loading, setloading] = useState(false)
-
-    const getSoldiers = () => {
-        setloading(true);
-        return axios
-            .get('https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/soldier.json')
-            .then(response =>{
-                const soldiers: Array<any> = Object.values(response.data)
-                setSoldiers(soldiers)
-                setloading(false)  
-            })
-            .catch(error =>{
-                console.log(error)
-                setloading(false)  
-            }) 
-    }
+    const [loading, setloading] = useState(true)
     
     function usePrevious(value:any) {
         const ref = useRef();
@@ -57,18 +43,25 @@ export const Soldiers: React.FC<Props> = ({ reffresh }) => {
             ref.current = value;
         });
         return ref.current;
-      }
+    }
     
-      const prevState = usePrevious(reffresh);
-        
-      console.log(prevState);
-      console.log(reffresh);
+    const prevState = usePrevious(reffresh);
+
+    const fetchSoldiers = async () => {
+        try {
+            const data: any = await SoldierService.getSoldiers()
+            setSoldiers(data);
+            setloading(false);
+        } catch(error) {
+            console.log(error);  
+        }
+    }
     
     useEffect(() => {
-        if( prevState !== reffresh) {
-            getSoldiers();
+        if( reffresh !== prevState) {
+            fetchSoldiers()
         }
-    },reffresh)
+    },[reffresh])    
 
     return (<>
         <div className="row">
@@ -115,15 +108,7 @@ export const Soldiers: React.FC<Props> = ({ reffresh }) => {
                 </>
                 )
             })}
-
-
-            <div className="col">
-                
-            </div>
-        </div>
-        
-           
-       
+        </div>       
     
     </>
     )

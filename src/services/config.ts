@@ -1,0 +1,2 @@
+export const API_WEAPONS = "https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/weapons.json";
+export const API_SOLDIERS = "https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/soldier.json";

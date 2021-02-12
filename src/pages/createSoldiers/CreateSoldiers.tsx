@@ -3,7 +3,8 @@ import { Button } from '../../components/buttons/Buttons';
 import { Soldier } from '../../components/soldier/Soldier';
 import { Weapon } from '../../components/weapons/Weapons';
 import { Title } from '../../components/title/Title';
-import axios from 'axios';
+import WeaponService from '../../services/weaponAPI';
+import SoldierService from '../../services/SoldiersAPI';
 
 interface PropsState {
     power:number;
@@ -35,23 +36,12 @@ export const CreateSoldiers: React.FC<Props> = ({ refresh }) => {
         name: ""
     })
     
-    /**
-     * Requète permettant de récupérer la liste des armes
-     */
-    const getWeapons = () => {    
-        return axios
-        .get('https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/weapons.json')
-        .then(response => {
-            const weaponArray: Array<string> = Object.values(response.data)
-            setSoldier({...soldier, weapons: weaponArray})
-        })
-        .catch(error => console.log(error));
-    }
-
     useEffect(() => {
         setSoldier({...soldier, load: true})
-        getWeapons();    
+        WeaponService.getWeapons()
+        .then(weapons => setSoldier({...soldier, weapons:weapons}))   
     }, [])
+    
     
     /**
      * Permet de changer de personnage en cliquant à droite
@@ -122,7 +112,7 @@ export const CreateSoldiers: React.FC<Props> = ({ refresh }) => {
     }
 
     /**
-     * Création du personnage
+     * Création d'un personnage
      */
     const handleCreate = (e:any) => {
         setSoldier({...soldier, load: true})
@@ -131,14 +121,12 @@ export const CreateSoldiers: React.FC<Props> = ({ refresh }) => {
             perso : {...soldier}, 
             name : soldier.name 
         }
-        axios
-            .post('https://soldier-81b1b-default-rtdb.europe-west1.firebasedatabase.app/soldier.json',player)
-            .then(response => {
-                console.log(response)
-                handleReset();
-                refresh();
-            })
-            .catch(error => console.log(error))
+        SoldierService.addSoldier(player)
+        .then(response => {
+            console.log(response);
+            handleReset();
+            refresh();
+        })
     }
 
 

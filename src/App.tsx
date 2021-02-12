@@ -9,7 +9,6 @@ const App: React.FC = () => {
    setRefresh(!refresh)
  }
 
- console.log(refresh);
   return (
     <div className="container">
       <CreateSoldiers refresh={handleRefesh}/>
